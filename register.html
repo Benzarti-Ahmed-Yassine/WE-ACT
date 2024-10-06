@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <style>
+        @import url("https://fonts.googleapis.com/css?family=Raleway:400,700");
+        *, *:before, *:after {
+          box-sizing: border-box;
+        }
+
+        body {
+          min-height: 100vh;
+          font-family: "Raleway", sans-serif;
+          background-color: #f7faff; /* Soft blue-gray background */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        /* Container design matching AI/cybersecurity style */
+        .container {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        /* Cybersecurity elements with soft animations */
+        .top:before, .top:after, .bottom:before, .bottom:after {
+          content: "";
+          display: block;
+          position: absolute;
+          width: 200vmax;
+          height: 200vmax;
+          top: 50%;
+          left: 50%;
+          margin-top: -100vmax;
+          transform-origin: 0 50%;
+          transition: all 0.6s ease-in-out;
+          z-index: 10;
+          opacity: 0.2;
+        }
+
+        .top:before {
+          transform: rotate(45deg);
+          background: #91c8e4; /* Calm pastel blue */
+        }
+        .top:after {
+          transform: rotate(135deg);
+          background: #ffae81; /* Soft peach for balance */
+        }
+
+        .bottom:before {
+          transform: rotate(-45deg);
+          background: #b6d3ec; /* Calm, pastel blue */
+        }
+        .bottom:after {
+          transform: rotate(-135deg);
+          background: #81b3ff; /* AI-inspired blue */
+        }
+
+        .container:hover .top:before, 
+        .container:hover .top:after, 
+        .container:hover .bottom:before, 
+        .container:hover .bottom:after {
+          margin-left: 150px;
+          transform-origin: -200px 50%;
+          transition-delay: 0s;
+        }
+
+        /* Centered registration form box */
+        .center {
+          position: relative;
+          width: 400px;
+          background-color: #ffffff; /* Clean white background */
+          padding: 40px 30px;
+          border-radius: 15px; /* Soft rounded corners */
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Light shadow */
+          z-index: 20;
+          text-align: center;
+        }
+
+        h2 {
+          color: #5a67d8; /* Soft purple-blue matching the theme */
+          margin-bottom: 20px;
+          font-size: 26px;
+        }
+
+        .center input {
+          width: 100%;
+          padding: 15px;
+          margin: 10px 0;
+          border-radius: 8px; /* Softer input fields */
+          border: 1px solid #ccc;
+          font-family: inherit;
+          transition: all 0.3s ease;
+        }
+
+        .center input:focus {
+          border-color: #5a67d8; /* AI-inspired focus color */
+          outline: none;
+          box-shadow: 0 0 8px rgba(90, 103, 216, 0.3); /* Subtle glowing effect */
+        }
+
+        /* Button design with same hover effects as login */
+        button {
+          position: relative;
+          display: inline-block;
+          margin: 20px auto 0;
+          padding: 15px 30px;
+          text-align: center;
+          font-size: 18px;
+          letter-spacing: 1px;
+          text-decoration: none;
+          color: #5a67d8;
+          background: transparent;
+          cursor: pointer;
+          transition: ease-out 0.5s;
+          border: 2px solid #5a67d8;
+          border-radius: 10px;
+          box-shadow: inset 0 0 0 0 #5a67d8;
+        }
+
+        button:hover {
+          color: white;
+          box-shadow: inset 0 -100px 0 0 #5a67d8;
+        }
+
+        button:active {
+          transform: scale(0.95); /* Subtle click effect */
+        }
+
+        /* Error and success message styling */
+        .error-message {
+          color: red;
+          margin-top: 10px;
+          font-size: 14px;
+        }
+
+        .success-message {
+          color: green;
+          margin-top: 10px;
+          font-size: 14px;
+        }
+
+        /* Link to the login page */
+        a {
+          color: #5a67d8;
+          text-decoration: none;
+          margin-top: 20px;
+          display: inline-block;
+        }
+
+        a:hover {
+          text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top"></div>
+    <div class="bottom"></div>
+    <div class="center">
+        <h2>Register</h2>
+        
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul>
+            {% for category, message in messages %}
+              <li class="{{ 'error-message' if category == 'error' else 'success-message' }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Registration form -->
+        <form method="POST" action="{{ url_for('register') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.username.label }} 
+                {{ form.username(class="form-control") }}
+                {% for error in form.username.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.email.label }} 
+                {{ form.email(class="form-control") }}
+                {% for error in form.email.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label }} 
+                {{ form.password(class="form-control") }}
+                {% for error in form.password.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <a href="{{ url_for('login') }}">Already registered? Log in here.</a>
+    </div>
+</div>
+</body>
+</html>
