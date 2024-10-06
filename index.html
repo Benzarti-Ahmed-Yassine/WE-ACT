@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Analysis - Photo Security Check</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Overall body style */
+        body {
+            background-color: #f0f4f8; /* Soft, calming background */
+            padding: 20px;
+            color: #333; /* Relaxed, dark grey for readability */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Main container */
+        .container {
+            background-color: #ffffff; /* White, clean background */
+            border-radius: 12px; /* Smooth, rounded corners */
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow for subtle depth */
+        }
+
+        /* Headings with friendly AI style */
+        h2, h3 {
+            color: #5a67d8; /* Soothing pastel blue-purple to evoke AI vibes */
+            text-shadow: 0 0 6px rgba(90, 103, 216, 0.2); /* Soft glow for AI touch */
+        }
+
+        /* Notification message box */
+        .alert {
+            margin-bottom: 20px;
+            background-color: #edf2f7; /* Light grey background for alert box */
+            color: #2d3748; /* Dark grey for contrast */
+            border: 1px solid #a0aec0; /* Soft border */
+        }
+
+        /* Buttons with calming color scheme */
+        .btn-success {
+            background-color: #48bb78; /* Soft green for confirmation buttons */
+            border-color: #48bb78;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .btn-success:hover {
+            background-color: #38a169; /* Darker green for hover */
+            border-color: #2f855a;
+        }
+
+        .btn-danger {
+            background-color: #e53e3e; /* Soft red for logout */
+            border-color: #e53e3e;
+        }
+
+        /* Video section with AI-inspired accent */
+        video {
+            width: 50%;
+            height: auto;
+            border: 2px solid #5a67d8; /* AI touch: blue-purple border */
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            display: none;
+        }
+
+        /* Chatbot Icon and Modal Styling */
+        #chatbotIcon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #5a67d8; 
+            background-image: url('C:\Users\hasse\Downloads');
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(90, 103, 216, 0.4); /* Glow effect */
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 1000;
+        }
+
+        #chatbotIcon:hover {
+            transform: scale(1.1); /* Slightly larger on hover */
+            background-color: #4c51bf; /* Darker hover state */
+        }
+
+        #chatbotIcon i {
+            font-size: 30px;
+            color: #ffffff; /* White icon on soft purple */
+        }
+
+        /* Chatbot Modal */
+        #chatbot {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            border: 1px solid #5a67d8;
+            border-radius: 12px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 20px rgba(90, 103, 216, 0.2); /* AI glow */
+            display: none;
+            flex-direction: column;
+        }
+
+        #chatbot.open {
+            display: flex;
+        }
+
+        #chatbotHeader {
+            background-color: #5a67d8;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(90, 103, 216, 0.4);
+        }
+
+        #chatbotBody {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        #chatInput {
+            padding: 10px;
+            border-top: 1px solid #5a67d8;
+        }
+
+        .user-message {
+            background-color: #48bb78; /* Green for user messages */
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            margin: 5px 0;
+            max-width: 80%;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background-color: #f7fafc; /* Soft light for bot message */
+            color: #5a67d8; /* AI-inspired text */
+            padding: 8px 12px;
+            border-radius: 15px;
+            margin: 5px 0;
+            max-width: 80%;
+            align-self: flex-start;
+            border: 1px solid #5a67d8;
+        }
+
+        #chatHistory {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Loader and progress indicator */
+        .loading-indicator {
+            display: none;
+            color: #5a67d8; /* AI-styled progress text */
+        }
+
+        .loading-indicator.active {
+            display: block;
+        }
+
+        /* Security tips section */
+        .security-tips {
+            margin-top: 10px;
+            color: #5a67d8;
+        }
+
+        .security-tips ul {
+            padding-left: 20px;
+        }
+
+        .spinner-border {
+            margin-left: 10px;
+            color: #5a67d8;
+        }
+
+        /* Smooth animation for chatbot */
+        #chatbot.open {
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            0% {
+                transform: translateY(100%);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Face Analysis - Check Your Photo Security</h2>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Captured Image Display -->
+        {% if captured_filename %}
+            <h3>Captured Image</h3>
+            <img src="{{ url_for('static', filename='captured/capture.jpg') }}" 
+                 alt="Captured image - {{ captured_filename }}" 
+                 class="img-fluid rounded" 
+                 style="max-width: 150px; height: auto;">
+        {% endif %}
+
+        <!-- Camera Video -->
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+
+        <!-- Comparison Results -->
+        <div class="results-section">
+            {% if results is not none %}
+                <h2>Comparison Results:</h2>
+                <ul class="list-group">
+                    {% if results and results|length > 0 %}
+                        {% for result in results %}
+                            <li class="list-group-item">
+                                <strong>Compared Image:</strong> {{ result.filename }} <br>
+                                <strong>Status:</strong> {{ 'Similar' if result.status == 'similar' else 'Not Similar' }} <br>
+                                <strong>Image Type:</strong> {{ 'Real' if result.classification == 'real' else 'AI' }} <br>
+                                <strong>Similarity Score:</strong> {{ result.similarity_score }}% <br>
+                                <img src="{{ result.compared_image_path }}" 
+                                     alt="Compared image - {{ result.filename }}" 
+                                     class="img-thumbnail" 
+                                     style="width: 100px; height: auto;">
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <p>No results available yet.</p>
+                    {% endif %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading-indicator" id="loadingIndicator">
+            <p>Analysis in progress... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></p>
+        </div>
+
+        <!-- Analysis Button -->
+        <form method="POST" action="{{ url_for('index') }}" onsubmit="showLoadingIndicator()">
+            <button type="submit" class="btn btn-success">Perform Analysis</button>
+        </form>
+        
+        <!-- Logout Button -->
+        <a href="{{ url_for('login') }}" class="btn btn-danger mt-3">Logout</a>
+    </div>
+
+    <!-- Chatbot Icon -->
+    <div id="chatbotIcon">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <!-- Chatbot -->
+    <div id="chatbot">
+        <div id="chatbotHeader">Photo Security Bot</div>
+        <div id="chatbotBody">
+            <div id="chatHistory"></div>
+        </div>
+        <div id="chatInput">
+            <div class="input-group">
+                <input type="text" id="userInput" class="form-control" placeholder="Ask a question...">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" id="sendButton">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Camera access
+        const initializeCamera = async () => {
+            const video = document.getElementById('video');
+            const errorDisplay = document.createElement('div');
+            errorDisplay.className = 'alert alert-danger';
+    
+            try {
+                const constraints = [
+                    { video: { facingMode: "user" } },
+                    { video: { facingMode: "environment" } }
+                ];
+
+                const stream = await navigator.mediaDevices.getUserMedia(constraints[0]);
+                video.srcObject = stream;
+            } catch (error) {
+                errorDisplay.innerHTML = 'Unable to access the camera. Please make sure your camera is enabled.';
+                document.body.appendChild(errorDisplay);
+            }
+        };
+
+        // Chatbot toggle
+        const chatbotIcon = document.getElementById('chatbotIcon');
+        const chatbot = document.getElementById('chatbot');
+
+        chatbotIcon.addEventListener('click', function () {
+            chatbot.classList.toggle('open');
+        });
+
+        // Show loading indicator
+        function showLoadingIndicator() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            loadingIndicator.classList.add('active');
+        }
+        function showLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    loadingIndicator.classList.add('active');
+}
+
+
+        const sendButton = document.getElementById('sendButton');
+        const userInput = document.getElementById('userInput');
+        const chatHistory = document.getElementById('chatHistory');
+
+        chatbotIcon.addEventListener('click', () => {
+            chatbot.classList.toggle('open');
+        });
+
+        const tipsDatabase = {
+            general: [
+        "Always use unique passwords for each account.",
+        "Enable two-factor authentication on important accounts.",
+        "Regularly update your software to protect against vulnerabilities.",
+        "Be cautious about sharing personal information online."
+    ],
+    phishing: [
+        "Never click on links from unknown sources.",
+        "Verify the sender's email before responding.",
+        "Be skeptical of emails that ask for personal information.",
+        "Check for spelling mistakes or odd language in emails as signs of phishing."
+    ],
+    malware: [
+        "Use antivirus software and keep it updated.",
+        "Do not download files from untrusted websites.",
+        "Avoid clicking on ads or pop-ups from unknown sites.",
+        "Back up your important data regularly."
+    ],
+    privacy: [
+        "Adjust your privacy settings on social media.",
+        "Be careful about sharing your location online.",
+        "Use a VPN to protect your online activity.",
+        "Avoid using public Wi-Fi for sensitive transactions."
+    ],
+    socialMedia: [
+                "Adjust your privacy settings to control who sees your posts.",
+                "Regularly review friend requests and remove suspicious contacts.",
+                "Consider what personal information you share publicly."
+            ],
+    photos: [
+                "Ensure that photos you upload don't reveal sensitive information.",
+                "Use watermarking for your images to protect your copyright.",
+                "Think twice before sharing location-tagged photos."
+            ]
+        };
+
+        function sendChatMessage() {
+            const message = userInput.value;
+            if (message) {
+                const userMessage = document.createElement('div');
+                userMessage.classList.add('user-message');
+                userMessage.innerText = message;
+                chatHistory.appendChild(userMessage);
+                userInput.value = '';
+                getBotResponse(message);
+            }
+        }
+
+        async function getBotResponse(userMessage) {
+            const botMessage = document.createElement('div');
+            botMessage.classList.add('bot-message');
+            botMessage.innerText = "Thinking..."; // Placeholder for bot's thinking time
+            chatHistory.appendChild(botMessage);
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.classList.add('loading-indicator');
+            loadingIndicator.innerText = "Loading...";
+            chatHistory.appendChild(loadingIndicator);
+
+            // Simulate bot thinking process
+            setTimeout(() => {
+                const response = getResponseFromDatabase(userMessage);
+                botMessage.innerText = response;
+                loadingIndicator.remove();
+            }, 2000); // Simulate delay for response
+        }
+
+        function getResponseFromDatabase(userMessage) {
+            // Determine category from user message
+            const lowerCaseMessage = userMessage.toLowerCase();
+            if (lowerCaseMessage.includes("security")) {
+                return tipsDatabase.general[Math.floor(Math.random() * tipsDatabase.general.length)];
+            } else if (lowerCaseMessage.includes("social media")) {
+                return tipsDatabase.socialMedia[Math.floor(Math.random() * tipsDatabase.socialMedia.length)];
+            }else if (lowerCaseMessage.includes("privacy")) {
+                    return tipsDatabase.socialMedia[Math.floor(Math.random() * tipsDatabase.socialMedia.length)];
+            }   else if (lowerCaseMessage.includes("phising")) {
+                    return tipsDatabase.socialMedia[Math.floor(Math.random() * tipsDatabase.socialMedia.length)];
+            }   else if (lowerCaseMessage.includes("malware")) {
+                        return tipsDatabase.socialMedia[Math.floor(Math.random() * tipsDatabase.socialMedia.length)];
+            } else if (lowerCaseMessage.includes("photo")) {
+                return tipsDatabase.photos[Math.floor(Math.random() * tipsDatabase.photos.length)];
+            } else {
+                return "I'm not sure how to help with that. Try asking about security tips,phising,malware,privacy, social media, or photos.";
+            }
+        }
+        sendButton.addEventListener('click', sendChatMessage);
+        userInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+        // Initialize the camera
+        initializeCamera();
+    </script>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</body>
+</html>
