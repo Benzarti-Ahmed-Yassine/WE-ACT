@@ -370,11 +370,6 @@
     delete: [
                 "To delete photos not posted by you on other websites, you can contact the website owner, file a DMCA takedown, report the image, seek legal action if needed, or use a content removal service"],
             ],
-    photos: [
-                "Ensure that photos you upload don't reveal sensitive information.",
-                "Use watermarking for your images to protect your copyright.",
-                "Think twice before sharing location-tagged photos."
-            ]
         };
 
         function sendChatMessage() {
@@ -417,11 +412,9 @@
             }else if (lowerCaseMessage.includes("privacy")) {
                     return tipsDatabase.socialMedia[Math.floor(Math.random() * tipsDatabase.privacy.length)];
             }   else if (lowerCaseMessage.includes("phising")) {
-                    return tipsDatabase.socialMedia[Math.floor(Math.random() * tipsDatabase.phising.length)];
+                    return tipsDatabase.ph[Math.floor(Math.random() * tipsDatabase.phising.length)];
             }   else if (lowerCaseMessage.includes("malware")) {
-                        return tipsDatabase.socialMedia[Math.floor(Math.random() * tipsDatabase.malware.length)];
-            } else if (lowerCaseMessage.includes("photo")) {
-                return tipsDatabase.photos[Math.floor(Math.random() * tipsDatabase.photos.length)];
+                        return tipsDatabase.malware[Math.floor(Math.random() * tipsDatabase.malware.length)];
             }else if (lowerCaseMessage.includes("delete")) {
                 return tipsDatabase.delete;   
             } else {
